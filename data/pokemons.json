@@ -1,0 +1,137 @@
+[
+    {
+        "nombre": "Charizard",
+        "tipo": "Fuego",
+        "ps_max": 78,
+        "ataques": [
+            {"nombre": "Lanzallamas", "poder": 90, "tipo": "Fuego"},
+            {"nombre": "Garra Dragón", "poder": 80, "tipo": "Dragón"},
+            {"nombre": "Tajo Aéreo", "poder": 75, "tipo": "Volador"},
+            {"nombre": "Terremoto", "poder": 100, "tipo": "Tierra"}
+        ]
+    },
+    {
+        "nombre": "Blastoise",
+        "tipo": "Agua",
+        "ps_max": 79,
+        "ataques": [
+            {"nombre": "Hidrobomba", "poder": 110, "tipo": "Agua"},
+            {"nombre": "Rayo Hielo", "poder": 90, "tipo": "Hielo"},
+            {"nombre": "Cabezazo", "poder": 130, "tipo": "Normal"},
+            {"nombre": "Contraataque", "poder": 70, "tipo": "Lucha"}
+        ]
+    },
+    {
+        "nombre": "Venusaur",
+        "tipo": "Planta",
+        "ps_max": 80,
+        "ataques": [
+            {"nombre": "Rayo Solar", "poder": 120, "tipo": "Planta"},
+            {"nombre": "Bomba Lodo", "poder": 90, "tipo": "Veneno"},
+            {"nombre": "Danza Pétalo", "poder": 70, "tipo": "Planta"},
+            {"nombre": "Terremoto", "poder": 100, "tipo": "Tierra"}
+        ]
+    },
+    {
+        "nombre": "Pikachu",
+        "tipo": "Eléctrico",
+        "ps_max": 35,
+        "ataques": [
+            {"nombre": "Impactrueno", "poder": 90, "tipo": "Eléctrico"},
+            {"nombre": "Ataque Rápido", "poder": 40, "tipo": "Normal"},
+            {"nombre": "Onda Voltio", "poder": 60, "tipo": "Eléctrico"},
+            {"nombre": "Cola Férrea", "poder": 100, "tipo": "Acero"}
+        ]
+    },
+    {
+        "nombre": "Gengar",
+        "tipo": "Fantasma",
+        "ps_max": 60,
+        "ataques": [
+            {"nombre": "Bola Sombra", "poder": 80, "tipo": "Fantasma"},
+            {"nombre": "Bomba Lodo", "poder": 90, "tipo": "Veneno"},
+            {"nombre": "Psíquico", "poder": 90, "tipo": "Psíquico"},
+            {"nombre": "Pulso Umbrío", "poder": 80, "tipo": "Siniestro"}
+        ]
+    },
+    {
+        "nombre": "Dragonite",
+        "tipo": "Dragón",
+        "ps_max": 91,
+        "ataques": [
+            {"nombre": "Hiperrayo", "poder": 150, "tipo": "Normal"},
+            {"nombre": "Garra Dragón", "poder": 80, "tipo": "Dragón"},
+            {"nombre": "Vendaval", "poder": 110, "tipo": "Volador"},
+            {"nombre": "Onda Ígnea", "poder": 95, "tipo": "Fuego"}
+        ]
+    },
+    {
+        "nombre": "Snorlax",
+        "tipo": "Normal",
+        "ps_max": 160,
+        "ataques": [
+            {"nombre": "Golpe Cuerpo", "poder": 85, "tipo": "Normal"},
+            {"nombre": "Terremoto", "poder": 100, "tipo": "Tierra"},
+            {"nombre": "Rayo Hielo", "poder": 90, "tipo": "Hielo"},
+            {"nombre": "Cabezazo", "poder": 130, "tipo": "Normal"}
+        ]
+    },
+    {
+        "nombre": "Alakazam",
+        "tipo": "Psíquico",
+        "ps_max": 55,
+        "ataques": [
+            {"nombre": "Psíquico", "poder": 90, "tipo": "Psíquico"},
+            {"nombre": "Onda Mental", "poder": 85, "tipo": "Psíquico"},
+            {"nombre": "Foco Resplandor", "poder": 80, "tipo": "Acero"},
+            {"nombre": "Rayo Confuso", "poder": 50, "tipo": "Psíquico"}
+        ]
+    },
+    {
+        "nombre": "Machamp",
+        "tipo": "Lucha",
+        "ps_max": 90,
+        "ataques": [
+            {"nombre": "Golpe Karate", "poder": 100, "tipo": "Lucha"},
+            {"nombre": "Terremoto", "poder": 100, "tipo": "Tierra"},
+            {"nombre": "Puño Dinámico", "poder": 90, "tipo": "Lucha"},
+            {"nombre": "Roca Afilada", "poder": 70, "tipo": "Roca"}
+        ]
+    },
+    {
+        "nombre": "Gyarados",
+        "tipo": "Agua",
+        "ps_max": 95,
+        "ataques": [
+            {"nombre": "Hidrobomba", "poder": 110, "tipo": "Agua"},
+            {"nombre": "Hipercolmillo", "poder": 80, "tipo": "Normal"},
+            {"nombre": "Giro Rápido", "poder": 60, "tipo": "Normal"},
+            {"nombre": "Tornado", "poder": 70, "tipo": "Volador"}
+        ]
+    },
+    {
+        "nombre": "Exeggutor",
+        "tipo": "Planta",
+        "ps_max": 95,
+        "ataques": [
+            {"nombre": "Bomba Germen", "poder": 100, "tipo": "Planta"},
+            {"nombre": "Psíquico", "poder": 90, "tipo": "Psíquico"},
+            {"nombre": "Huevo Bomba", "poder": 85, "tipo": "Normal"},
+            {"nombre": "Síntesis", "poder": 0, "tipo": "Planta"}
+        ]
+    },
+    {
+        "nombre": "Rhydon",
+        "tipo": "Tierra",
+        "ps_max": 105,
+        "ataques": [
+            {"nombre": "Terremoto", "poder": 100, "tipo": "Tierra"},
+            {"nombre": "Cornada", "poder": 90, "tipo": "Normal"},
+            {"nombre": "Roca Afilada", "poder": 70, "tipo": "Roca"},
+            {"nombre": "Golpe Cuerpo", "poder": 85, "tipo": "Normal"}
+        ]
+    }
+]
+
+
+    
