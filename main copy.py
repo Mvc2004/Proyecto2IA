@@ -18,10 +18,33 @@ ai_attacks = [
     Attack("Bite", "Dark", 25, "assets/ataques-ia/bite.png")
 ]
 
+def pokemon_player_selected(pokemon_name):
 
-ai_pokemon = Pokemon("Charmander", "Fire", 100, ai_attacks)
+    global player_pokemon
+    if pokemon_name == "charmander":
+        player_pokemon = Pokemon("Charmander", "Fire", 100, player_attacks)
+    if pokemon_name == "pickachu":
+        player_pokemon = Pokemon("Charmander", "Fire", 100, player_attacks)
+    elif pokemon_name == "balsasaur":
+        player_pokemon = Pokemon("Bulbasaur", "Grass", 100, player_attacks)
+    elif pokemon_name == "otro":
+        player_pokemon = Pokemon("Squirtle", "Water", 100, player_attacks)
 
-game_state = GameState(player_pokemon, ai_pokemon)
+def pokemon_ia_selected(pokemon_name):
+    global ai_pokemon
+
+    if pokemon_name == "charmander":
+        return Pokemon("Charmander", "Fire", 100, ai_attacks)
+    if pokemon_name == "pickachu":
+        return Pokemon("Charmander", "Fire", 100, ai_attacks)
+    elif pokemon_name == "balsasaur":
+        return Pokemon("Charmander", "Fire", 100, ai_attacks)
+    elif pokemon_name == "otro":
+        return Pokemon("Charmander", "Fire", 100, ai_attacks)
+    
+
+
+game_state = GameState(pokemon_player_selected, pokemon_ia_selected)
 
 # GUI
 root = tk.Tk()
@@ -84,7 +107,7 @@ fr2 = tk.Frame(frame_player, bg="red", width=500, height=400)
 pikachu = tk.Button(fr2, text="Pikachu", width=10)
 pikachu.grid(row=0, column=0, padx=10, pady=10)
 
-charmander = tk.Button(fr2, text="Charmander",width=10)
+charmander = tk.Button(fr2, text="Charmander",width=10, command=pokemon_player_selected("charmander"))
 charmander.grid(row=0, column=1, padx=10, pady=10)
 
 bulbasaur = tk.Button(fr2, text="Bulbasaur",width=10)
@@ -92,9 +115,6 @@ bulbasaur.grid(row=1, column=0, padx=10, pady=10)
 
 otro = tk.Button(fr2, text="otro",width=10)
 otro.grid(row=1, column=1, padx=10, pady=10)
-
-if 
-player_pokemon = Pokemon(, "Electric", 100, player_attacks)
 
 fr2.pack(pady=10)
 
@@ -104,7 +124,7 @@ img = Image.open("assets/pikachu.png")
 img = img.resize((50, 50))
 img_tk = ImageTk.PhotoImage(img)
 
-h3 = tk.Label(fr3, text="Ataques", font=("Arial", 13), fg="black")
+h3 = tk.Label(fr3, text="eligue tu Ataque", font=("Arial", 13), fg="black")
 h3.grid(row=0, column=0, padx=10, pady=10)
 
 
@@ -117,6 +137,9 @@ for atk in player_pokemon.attacks:
     print(img_tk)
     btn = tk.Button(fr3, image=img_tk, command=lambda a=atk: player_turn(a))
     btn.grid(row=1, column=player_pokemon.attacks.index(atk), padx=10, pady=10)
+
+    name = tk.Label(fr3, text=atk.name, font=("Arial", 10), fg="black")
+    name.grid(row=2, column=player_pokemon.attacks.index(atk), padx=10, pady=5)
    
     btn.image = img_tk  # Guarda la referencia de la imagen
 
