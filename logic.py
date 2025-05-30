@@ -1,6 +1,5 @@
-import copy
-from dataclasses import dataclass
-from typing import List, Dict, Optional
+from pokemon import Pokemon, Movimiento
+from utils import calcular_daño, copiar_estado
 import random
 import json
 from pathlib import Path
@@ -212,7 +211,6 @@ def cargar_pokemons_desde_json(ruta: str = 'data/pokemons.json') -> List[Pokemon
         ))
 
     return pokemons
-
 def crear_entrenador_aleatorio(pokemons_disponibles: List[Pokemon], nombre: str = "Entrenador IA", tamaño_equipo: int = 3) -> Entrenador:
     equipo = random.sample(pokemons_disponibles, min(tamaño_equipo, len(pokemons_disponibles)))
     return Entrenador(nombre, [copy.deepcopy(p) for p in equipo])
@@ -230,4 +228,4 @@ if __name__ == "__main__":
         for ataque in exeggutor.ataques:
             print(f"- {ataque.nombre} ({ataque.tipo}, Poder: {ataque.poder})")
     else:
-        print("No se encontró a Exeggutor") 
+        print("\n💀 La IA te ha derrotado.")
