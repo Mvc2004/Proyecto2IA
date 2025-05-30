@@ -229,4 +229,4 @@ if __name__ == "__main__":
         for ataque in exeggutor.ataques:
             print(f"- {ataque.nombre} ({ataque.tipo}, Poder: {ataque.poder})")
     else:
-        print("No se encontró a Exeggutor")
+        print("No se encontró a Exeggutor") 

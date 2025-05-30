@@ -124,4 +124,4 @@ def seleccionar_mejor_ataque(estado: Any, profundidad: int) -> Any:
         if beta <= alfa:
             break  # Poda beta
 
-    return mejor_ataque
+    return mejor_ataque 
