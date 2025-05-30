@@ -13,14 +13,6 @@ class Ataque:
     tipo: str
 
 @dataclass
-
-class Attack:
-    def __init__(self, name, type_, power,img):
-        self.name = name
-        self.type = type_
-        self.power = power
-        self.img = img
-
 class Pokemon:
     nombre: str
     tipo: str
@@ -220,6 +212,7 @@ def cargar_pokemons_desde_json(ruta: str = 'data/pokemons.json') -> List[Pokemon
         ))
 
     return pokemons
+
 def crear_entrenador_aleatorio(pokemons_disponibles: List[Pokemon], nombre: str = "Entrenador IA", tamaño_equipo: int = 3) -> Entrenador:
     equipo = random.sample(pokemons_disponibles, min(tamaño_equipo, len(pokemons_disponibles)))
     return Entrenador(nombre, [copy.deepcopy(p) for p in equipo])
