@@ -3,10 +3,11 @@
 import random
 
 class Attack:
-    def __init__(self, name, type_, power):
+    def __init__(self, name, type_, power,img):
         self.name = name
         self.type = type_
         self.power = power
+        self.img = img
 
 class Pokemon:
     def __init__(self, name, type_, hp, attacks):

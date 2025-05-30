@@ -1,5 +1,4 @@
 
-
 TYPE_EFFECTIVENESS = {
     "Fire": {"Grass": 2, "Water": 0.5, "Fire": 0.5},
     "Water": {"Fire": 2, "Grass": 0.5, "Water": 0.5},

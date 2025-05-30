@@ -27,6 +27,7 @@ game_state = GameState(player_pokemon, ai_pokemon)
 
 # GUI
 root = tk.Tk()
+root.geometry("400x500+100+50")
 root.title("Pokeminmax: Combate Pokémon")
 
 status_text = tk.StringVar()
