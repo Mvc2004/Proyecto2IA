@@ -248,6 +248,11 @@ class PantallaCombate:
                 "roca": "No muy eficaz",
                 "dragón": "No muy eficaz"
             },
+            "normal": {
+                "roca": "No muy eficaz",
+                "fantasma": "No afecta",
+                "acero": "No muy eficaz"
+            },
             "agua": {
                 "fuego": "Súper Eficaz",
                 "tierra": "Súper Eficaz",
@@ -283,12 +288,14 @@ class PantallaCombate:
                 "dragón": "Súper Eficaz",
                 "agua": "No muy eficaz",
                 "hielo": "No muy eficaz",
-                "acero": "No muy eficaz"
+                "acero": "No muy eficaz",
+                "fuego": "No muy eficaz"
             },
             "lucha": {
                 "normal": "Súper Eficaz",
                 "hielo": "Súper Eficaz",
                 "roca": "Súper Eficaz",
+                "siniestro": "Súper Eficaz",
                 "acero": "Súper Eficaz",
                 "veneno": "No muy eficaz",
                 "volador": "No muy eficaz",
@@ -387,7 +394,7 @@ class PantallaCombate:
         if attack_type in effectiveness and defend_type in effectiveness[attack_type]:
             return effectiveness[attack_type][defend_type]
         else:
-            return "Eficaz"
+            return "Eficaz888"
 
     def create_title(self):
 
@@ -557,10 +564,11 @@ class PantallaCombate:
             
         for idx, (btn, movimiento) in enumerate(zip(self.botones_ataque, self.estado['jugador'].movimientos)):
             # Calcular la efectividad del movimiento del jugador contra el tipo de movimiento de la IA
-            effectiveness = self.get_type_effectiveness(movimiento.tipo, self.ai_chosen_move.tipo)
-            
+            print(self.estado['ia'].tipo)
+            effectiveness = self.get_type_effectiveness(movimiento.tipo, self.estado['ia'].tipo)
+            print(effectiveness)
             btn.config(
-                text=f"{movimiento.nombre}\n💥 {movimiento.poder} poder\n{effectiveness} vs {self.ai_chosen_move.tipo}"
+                text=f"{movimiento.nombre}\n💥 {movimiento.poder} poder\n{effectiveness} vs {self.estado['ia'].tipo}"
             )
 
     def create_battle_log(self):
@@ -813,9 +821,9 @@ class PantallaCombate:
         daño = ps_antes - ps_despues
         
         if self.ai_chosen_move:
-            effectiveness = self.get_type_effectiveness(movimiento.tipo, self.ai_chosen_move.tipo)
+            effectiveness = self.get_type_effectiveness(movimiento.tipo, self.estado['ia'].tipo)
             if effectiveness != "Eficaz":
-                self.mensaje.insert(tk.END, f"   ⚡ {effectiveness} contra {self.ai_chosen_move.tipo}!\n")
+                self.mensaje.insert(tk.END, f"   ⚡ {effectiveness} contra {self.estado['ia'].tipo}!\n")
         
         self.mensaje.insert(tk.END, f"   💥 Causó {daño:.0f} puntos de daño!\n")
         
