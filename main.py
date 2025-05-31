@@ -35,7 +35,7 @@ class PantallaInicio:
         
         # Main container
         self.main_container = tk.Frame(root, bg=BACKGROUND_COLOR)
-        self.main_container.pack(fill="both", expand=True, padx=40, pady=40)
+        self.main_container.pack(fill="both", expand=True, padx=10, pady=10)
         
         # Create welcome screen
         self.create_welcome_screen()
@@ -76,7 +76,6 @@ class PantallaInicio:
         content_frame = tk.Frame(self.main_container, bg=CARD_COLOR, relief=tk.RAISED, bd=3)
         content_frame.pack(fill="both", expand=True, padx=20, pady=20)
         
-        
         # Rules section
         rules_frame = tk.Frame(content_frame, bg=CARD_COLOR)
         rules_frame.pack(fill="both", expand=True, padx=30, pady=20)
@@ -95,6 +94,7 @@ class PantallaInicio:
             "🎯 Objetivo: Derrota al Pokémon de la IA reduciendo sus PS a 0",
             "⚔️ Combate: Selecciona uno de los 4 movimientos disponibles",
             "💥 Daño: Cada movimiento tiene diferente poder de ataque",
+            "🎨 Tipos: Los tipos afectan la efectividad de los movimientos",
             "🤖 IA Inteligente: La IA usa algoritmo minimax para elegir movimientos",
             "❤️ Vida: Las barras de vida cambian de color según el daño recibido",
             "🏆 Victoria: ¡Gana siendo el último Pokémon en pie!"
@@ -135,7 +135,7 @@ class PantallaInicio:
         # Exit button
         exit_button = tk.Button(
             buttons_frame,
-            text="🚪 SALIR",
+            text="SALIR",
             font=("Arial", 14, "bold"),
             bg=DANGER_COLOR,
             fg="white",
@@ -166,7 +166,6 @@ class PantallaInicio:
         exit_button.bind("<Enter>", on_enter_exit)
         exit_button.bind("<Leave>", on_leave_exit)
 
-    
     def ir_a_seleccion(self):
         """Go to Pokemon selection screen"""
         self.root.destroy()
@@ -188,7 +187,6 @@ class PantallaCombate:
         self.root.configure(bg=BACKGROUND_COLOR)
         self.root.resizable(False, False)
         
-        # Center the window
         self.center_window()
         
         self.estado = {
@@ -196,44 +194,38 @@ class PantallaCombate:
             'ia': pkm_ia
         }
         
-        # Main container
+        self.ai_chosen_move = None
+        
         self.canvas = tk.Canvas(self.root, bg=BACKGROUND_COLOR, highlightthickness=0)
         self.scrollbar = ttk.Scrollbar(self.root, orient="vertical", command=self.canvas.yview)
         self.main_container = tk.Frame(self.canvas, bg=BACKGROUND_COLOR)
 
-        # Empaquetar canvas y scrollbar
         self.canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
 
-        # Configurar el canvas para que tenga el main_container dentro
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
         self.canvas_window = self.canvas.create_window((0, 0), window=self.main_container, anchor="nw")
 
-        # Actualizar scrollregion cuando cambie el tamaño del contenido
         def on_frame_configure(event):
             self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
         self.main_container.bind("<Configure>", on_frame_configure)
         
-        # Title
+        
         self.create_title()
         
-        # Battle area
         self.create_battle_area()
         
-        # Battle log
+        self.create_ai_move_display()
+        
         self.create_battle_log()
         
-        # Move buttons
         self.create_move_buttons()
         
-        # Exit button
         self.create_exit_button()
         
-        # Configure styles
         self.configure_styles()
         
-        # Initialize display
         self.actualizar_estado()
 
     def center_window(self):
@@ -243,8 +235,169 @@ class PantallaCombate:
         y = (self.root.winfo_screenheight() // 2) - (WINDOW_HEIGHT // 2)
         self.root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}+{x}+{y}")
 
+    def get_type_effectiveness(self, attack_type, defend_type):
+        
+        effectiveness = {
+            "fuego": {
+                "planta": "Súper Eficaz",
+                "hielo": "Súper Eficaz",
+                "bicho": "Súper Eficaz",
+                "acero": "Súper Eficaz",
+                "agua": "No muy eficaz",
+                "fuego": "No muy eficaz",
+                "roca": "No muy eficaz",
+                "dragón": "No muy eficaz"
+            },
+            "normal": {
+                "roca": "No muy eficaz",
+                "fantasma": "No afecta",
+                "acero": "No muy eficaz"
+            },
+            "agua": {
+                "fuego": "Súper Eficaz",
+                "tierra": "Súper Eficaz",
+                "roca": "Súper Eficaz",
+                "agua": "No muy eficaz",
+                "planta": "No muy eficaz",
+                "dragón": "No muy eficaz"
+            },
+            "planta": {
+                "agua": "Súper Eficaz",
+                "tierra": "Súper Eficaz",
+                "roca": "Súper Eficaz",
+                "fuego": "No muy eficaz",
+                "planta": "No muy eficaz",
+                "veneno": "No muy eficaz",
+                "volador": "No muy eficaz",
+                "bicho": "No muy eficaz",
+                "dragón": "No muy eficaz",
+                "acero": "No muy eficaz"
+            },
+            "eléctrico": {
+                "agua": "Súper Eficaz",
+                "volador": "Súper Eficaz",
+                "planta": "No muy eficaz",
+                "eléctrico": "No muy eficaz",
+                "dragón": "No muy eficaz",
+                "tierra": "No afecta"
+            },
+            "hielo": {
+                "planta": "Súper Eficaz",
+                "tierra": "Súper Eficaz",
+                "volador": "Súper Eficaz",
+                "dragón": "Súper Eficaz",
+                "agua": "No muy eficaz",
+                "hielo": "No muy eficaz",
+                "acero": "No muy eficaz",
+                "fuego": "No muy eficaz"
+            },
+            "lucha": {
+                "normal": "Súper Eficaz",
+                "hielo": "Súper Eficaz",
+                "roca": "Súper Eficaz",
+                "siniestro": "Súper Eficaz",
+                "acero": "Súper Eficaz",
+                "veneno": "No muy eficaz",
+                "volador": "No muy eficaz",
+                "psíquico": "No muy eficaz",
+                "bicho": "No muy eficaz",
+                "hada": "No muy eficaz",
+                "fantasma": "No afecta"
+            },
+            "veneno": {
+                "planta": "Súper Eficaz",
+                "hada": "Súper Eficaz",
+                "veneno": "No muy eficaz",
+                "tierra": "No muy eficaz",
+                "roca": "No muy eficaz",
+                "fantasma": "No muy eficaz",
+                "acero": "No afecta"
+            },
+            "tierra": {
+                "fuego": "Súper Eficaz",
+                "eléctrico": "Súper Eficaz",
+                "veneno": "Súper Eficaz",
+                "roca": "Súper Eficaz",
+                "acero": "Súper Eficaz",
+                "planta": "No muy eficaz",
+                "bicho": "No muy eficaz",
+                "volador": "No afecta"
+            },
+            "volador": {
+                "eléctrico": "Súper Eficaz",
+                "hielo": "Súper Eficaz",
+                "roca": "Súper Eficaz",
+                "planta": "Súper Eficaz",
+                "lucha": "Súper Eficaz",
+                "bicho": "Súper Eficaz",
+                "eléctrico": "No muy eficaz",
+                "roca": "No muy eficaz",
+                "acero": "No muy eficaz"
+            },
+            "psíquico": {
+                "lucha": "Súper Eficaz",
+                "veneno": "Súper Eficaz",
+                "psíquico": "No muy eficaz",
+                "acero": "No muy eficaz"
+            },
+            "bicho": {
+                "planta": "Súper Eficaz",
+                "psíquico": "Súper Eficaz",
+                "fuego": "No muy eficaz",
+                "lucha": "No muy eficaz",
+                "veneno": "No muy eficaz",
+                "volador": "No muy eficaz",
+                "fantasma": "No muy eficaz",
+                "acero": "No muy eficaz",
+                "hada": "No muy eficaz"
+            },
+            "roca": {
+                "fuego": "Súper Eficaz",
+                "hielo": "Súper Eficaz",
+                "volador": "Súper Eficaz",
+                "bicho": "Súper Eficaz",
+                "lucha": "No muy eficaz",
+                "tierra": "No muy eficaz",
+                "acero": "No muy eficaz"
+            },
+            "fantasma": {
+                "psíquico": "Súper Eficaz",
+                "fantasma": "Súper Eficaz",
+                "normal": "No afecta"
+            },
+            "dragón": {
+                "dragón": "Súper Eficaz",
+                "acero": "No muy eficaz",
+                "hada": "No afecta"
+            },
+            "acero": {
+                "hielo": "Súper Eficaz",
+                "roca": "Súper Eficaz",
+                "hada": "Súper Eficaz",
+                "fuego": "No muy eficaz",
+                "agua": "No muy eficaz",
+                "eléctrico": "No muy eficaz",
+                "acero": "No muy eficaz"
+            },
+            "hada": {
+                "lucha": "Súper Eficaz",
+                "dragón": "Súper Eficaz",
+                "fuego": "No muy eficaz",
+                "veneno": "No muy eficaz",
+                "acero": "No muy eficaz"
+            }
+        }
+        
+        attack_type = attack_type.lower()
+        defend_type = defend_type.lower()
+        
+        if attack_type in effectiveness and defend_type in effectiveness[attack_type]:
+            return effectiveness[attack_type][defend_type]
+        else:
+            return "Eficaz888"
+
     def create_title(self):
-        """Create the battle title"""
+
         title_frame = tk.Frame(self.main_container, bg=BACKGROUND_COLOR)
         title_frame.pack(pady=(0, 10))
         
@@ -259,11 +412,10 @@ class PantallaCombate:
         title_label.pack()
 
     def create_battle_area(self):
-        """Área de combate con los dos Pokémon enfrentados horizontalmente"""
+
         battle_frame = tk.Frame(self.main_container, bg=BACKGROUND_COLOR)
         battle_frame.pack(fill="x", pady=10, padx=80)
 
-        # Configura columnas para IA - VS - Jugador
         for i in range(3):
             battle_frame.grid_columnconfigure(i, weight=1)
 
@@ -283,9 +435,8 @@ class PantallaCombate:
         # Pokémon del jugador (derecha)
         self.create_pokemon_display(battle_frame, self.estado['jugador'], 'jugador', 0, 2)
 
-
     def create_pokemon_display(self, parent, pokemon, side, row, column):
-        """Muestra Pokémon con imagen, tipo y vida"""
+
         pokemon_frame = tk.Frame(parent, bg="white", relief=tk.RAISED, bd=2)
         pokemon_frame.grid_propagate(False)
         pokemon_frame.grid(row=row, column=column, padx=20, pady=5, sticky="nsew")
@@ -341,9 +492,87 @@ class PantallaCombate:
         health_text.pack(anchor="e", padx=5)
         setattr(self, f"{side}_health_text", health_text)
 
+    def create_ai_move_display(self):
+
+        ai_move_frame = tk.Frame(self.main_container, bg="#e74c3c", relief=tk.RAISED, bd=3)
+        ai_move_frame.pack(fill="x", pady=10, padx=80)
+        
+        ai_move_title = tk.Label(
+            ai_move_frame,
+            text="🤖 MOVIMIENTO DE LA IA",
+            font=("Arial", 12, "bold"),
+            bg="#e74c3c",
+            fg="white"
+        )
+        ai_move_title.pack(pady=5)
+        
+        self.ai_move_info_frame = tk.Frame(ai_move_frame, bg="#e74c3c")
+        self.ai_move_info_frame.pack(pady=10)
+        
+        self.ai_move_label = tk.Label(
+            self.ai_move_info_frame,
+            text="🤔 La IA está pensando...",
+            font=("Arial", 14, "bold"),
+            bg="#e74c3c",
+            fg="white"
+        )
+        self.ai_move_label.pack()
+
+    def update_ai_move_display(self, move):
+
+        self.ai_chosen_move = move
+        
+        for widget in self.ai_move_info_frame.winfo_children():
+            widget.destroy()
+        
+        move_container = tk.Frame(self.ai_move_info_frame, bg="#e74c3c")
+        move_container.pack()
+        
+        move_img = self.load_move_image(move.tipo.lower())
+        move_img_label = tk.Label(move_container, image=move_img, bg="#e74c3c")
+        move_img_label.image = move_img 
+        move_img_label.pack(side=tk.LEFT, padx=10)
+        
+        move_info_frame = tk.Frame(move_container, bg="#e74c3c")
+        move_info_frame.pack(side=tk.LEFT, padx=10)
+        
+        move_name_label = tk.Label(
+            move_info_frame,
+            text=f"⚡ {move.nombre}",
+            font=("Arial", 14, "bold"),
+            bg="#e74c3c",
+            fg="white"
+        )
+        move_name_label.pack()
+        
+        move_details_label = tk.Label(
+            move_info_frame,
+            text=f"Tipo: {move.tipo.upper()} | Poder: {move.poder}",
+            font=("Arial", 10),
+            bg="#e74c3c",
+            fg="white"
+        )
+        move_details_label.pack()
+        
+        # Update player move buttons with effectiveness
+        self.update_move_buttons_effectiveness()
+
+    def update_move_buttons_effectiveness(self):
+
+        if not self.ai_chosen_move:
+            return
+            
+        for idx, (btn, movimiento) in enumerate(zip(self.botones_ataque, self.estado['jugador'].movimientos)):
+            # Calcular la efectividad del movimiento del jugador contra el tipo de movimiento de la IA
+            print(self.estado['ia'].tipo)
+            effectiveness = self.get_type_effectiveness(movimiento.tipo, self.estado['ia'].tipo)
+            print(effectiveness)
+            btn.config(
+                text=f"{movimiento.nombre}\n💥 {movimiento.poder} poder\n{effectiveness} vs {self.estado['ia'].tipo}"
+            )
 
     def create_battle_log(self):
-        """Create the battle log area"""
+
         log_frame = tk.Frame(self.main_container, bg=CARD_COLOR, relief=tk.RAISED, bd=3)
         log_frame.pack(fill="x", pady=20,padx=80)
         
@@ -384,8 +613,7 @@ class PantallaCombate:
         self.mensaje.insert(tk.END, "=" * 50 + "\n\n")
 
     def create_move_buttons(self):
-        print("Creating move selection buttons...")
-        """Create the move selection buttons"""
+
         moves_frame = tk.Frame(self.main_container, bg=CARD_COLOR, relief=tk.RAISED, bd=3)
         moves_frame.pack(fill="x", pady=20,padx=80)
         
@@ -398,36 +626,30 @@ class PantallaCombate:
         )
         moves_title.pack(pady=10)
         
-        # Buttons container
         buttons_container = tk.Frame(moves_frame, bg=CARD_COLOR)
         buttons_container.pack(pady=10)
         
-        # Configure grid for centering
-        print("Movimientos del jugador:", self.estado['jugador'].movimientos)
 
         for i in range(2):
             buttons_container.grid_columnconfigure(i, weight=1)
         
         self.botones_ataque = []
         for idx, movimiento in enumerate(self.estado['jugador'].movimientos):
-            # Move button frame
             move_frame = tk.Frame(buttons_container, bg=CARD_COLOR)
             move_frame.grid(row=idx // 2, column=idx % 2, padx=15, pady=10)
             
-            # Move type icon
-            print(movimiento.tipo.lower())
+          
             move_img = self.load_move_image(movimiento.tipo.lower())
             move_img_label = tk.Label(move_frame, image=move_img, bg=CARD_COLOR)
-            move_img_label.image = move_img  # Keep reference
+            move_img_label.image = move_img  
             move_img_label.pack(side=tk.LEFT, padx=5)
             
-            # Move button
             btn = tk.Button(
                 move_frame,
-                text=f"{movimiento.nombre}\n💥 {movimiento.poder} poder",
+                text=f"{movimiento.nombre}\n💥 {movimiento.poder} poder\nEsperando IA...",
                 width=22,
-                height=3,
-                font=("Arial", 10, "bold"),
+                height=4,
+                font=("Arial", 9, "bold"),
                 bg=self.get_type_color(movimiento.tipo),
                 fg="white",
                 relief=tk.RAISED,
@@ -438,20 +660,16 @@ class PantallaCombate:
             btn.pack(side=tk.LEFT, padx=5)
             self.botones_ataque.append(btn)
             
-            # Hover effects
             btn.bind("<Enter>", lambda e, b=btn: b.config(relief=tk.RIDGE))
             btn.bind("<Leave>", lambda e, b=btn: b.config(relief=tk.RAISED))
-    
-    
 
     def create_exit_button(self):
-        """Create exit button"""
+
         self.exit_frame = tk.Frame(self.main_container, bg=BACKGROUND_COLOR)
-        # Don't pack initially - will be shown when battle ends
         
         self.exit_button = tk.Button(
             self.exit_frame,
-            text="🚪 SALIR DEL JUEGO",
+            text="SALIR DEL JUEGO",
             font=("Arial", 12, "bold"),
             bg=DANGER_COLOR,
             fg="white",
@@ -465,11 +683,10 @@ class PantallaCombate:
         self.exit_button.pack(pady=20)
 
     def configure_styles(self):
-        """Configure ttk styles for health bars"""
+       
         style = ttk.Style()
         style.theme_use('default')
         
-        # Player health bar (green)
         style.configure(
             "jugador.Horizontal.TProgressbar",
             troughcolor='#7f8c8d',
@@ -486,7 +703,7 @@ class PantallaCombate:
         )
 
     def load_pokemon_image(self, pokemon_name):
-        """Load and resize a Pokémon image"""
+        
         try:
             img_path = f"assets/pokemon/{pokemon_name}.png"
             if not os.path.exists(img_path):
@@ -500,7 +717,7 @@ class PantallaCombate:
             return self.create_placeholder_pokemon_image(pokemon_name)
 
     def create_placeholder_pokemon_image(self, name):
-        """Create a placeholder Pokémon image"""
+        
         img = Image.new('RGBA', POKEMON_IMG_SIZE, color=(52, 73, 94, 255))
         draw = ImageDraw.Draw(img)
         
@@ -515,7 +732,6 @@ class PantallaCombate:
             width=3
         )
         
-        # Add text
         try:
             font = ImageFont.truetype("arial.ttf", 24)
         except IOError:
@@ -535,8 +751,7 @@ class PantallaCombate:
         return ImageTk.PhotoImage(img)
 
     def load_move_image(self, move_type):
-        """Load and resize a move type image"""
-        print(f"Loading move image for type: {move_type}")
+
         try:
             img_path = f"assets/types/{move_type}.png"
             print(f"Image path: {img_path}")
@@ -589,22 +804,28 @@ class PantallaCombate:
         return colors.get(tipo.lower(), "#68A090")
 
     def jugar_turno_usuario(self, movimiento):
+
         if not self.estado['jugador'].esta_vivo() or not self.estado['ia'].esta_vivo():
             return
 
         self.mensaje.insert(tk.END, f"\n🔥 {self.estado['jugador'].nombre} usó {movimiento.nombre}!\n")
         
-        # Flash effect
         self.ia_img_label.config(bg="#e74c3c")
         self.root.after(200, lambda: self.ia_img_label.config(bg=CARD_COLOR))
         
-        # Apply damage
+
         ps_antes = self.estado['ia'].ps
         aplicar_daño(self.estado['jugador'], self.estado['ia'], movimiento)
         ps_despues = self.estado['ia'].ps
         
-        damage = ps_antes - ps_despues
-        self.mensaje.insert(tk.END, f"   💥 Causó {damage:.0f} puntos de daño!\n")
+        daño = ps_antes - ps_despues
+        
+        if self.ai_chosen_move:
+            effectiveness = self.get_type_effectiveness(movimiento.tipo, self.estado['ia'].tipo)
+            if effectiveness != "Eficaz":
+                self.mensaje.insert(tk.END, f"   ⚡ {effectiveness} contra {self.estado['ia'].tipo}!\n")
+        
+        self.mensaje.insert(tk.END, f"   💥 Causó {daño:.0f} puntos de daño!\n")
         
         self.actualizar_estado()
         self.mensaje.see(tk.END)
@@ -618,10 +839,13 @@ class PantallaCombate:
         self.root.after(1500, self.turno_ia)
 
     def turno_ia(self):
+
         estado_copia = copiar_estado(self.estado)
         _, mejor_ataque = minimax_con_poda(
             estado_copia, profundidad=3, alpha=float('-inf'), beta=float('inf'), es_max_turno=True
         )
+
+        self.update_ai_move_display(mejor_ataque)
 
         ataque_real = None
         for m in self.estado['ia'].movimientos:
@@ -631,17 +855,15 @@ class PantallaCombate:
 
         self.mensaje.insert(tk.END, f"\n⚡ {self.estado['ia'].nombre} usó {mejor_ataque.nombre}!\n")
         
-        # Flash effect
         self.jugador_img_label.config(bg="#e74c3c")
         self.root.after(200, lambda: self.jugador_img_label.config(bg=CARD_COLOR))
         
-        # Apply damage
         ps_antes = self.estado['jugador'].ps
         aplicar_daño(self.estado['ia'], self.estado['jugador'], ataque_real)
         ps_despues = self.estado['jugador'].ps
         
-        damage = ps_antes - ps_despues
-        self.mensaje.insert(tk.END, f"   💥 Causó {damage:.0f} puntos de daño!\n")
+        daño = ps_antes - ps_despues
+        self.mensaje.insert(tk.END, f"   💥 Causó {daño:.0f} puntos de daño!\n")
         
         self.actualizar_estado()
         self.mensaje.see(tk.END)
@@ -652,14 +874,13 @@ class PantallaCombate:
             self.finalizar_combate()
 
     def actualizar_estado(self):
-        # Update player health
         health_percentage = max(0, (self.estado['jugador'].ps / self.estado['jugador'].ps_max) * 100)
         self.jugador_health_bar["value"] = health_percentage
         self.jugador_health_text.config(
             text=f"{max(0, self.estado['jugador'].ps):.0f} / {self.estado['jugador'].ps_max:.0f}"
         )
         
-        # Update health bar color based on percentage
+        # actualizar el color de la barra de salud del jugador
         style = ttk.Style()
         if health_percentage > 50:
             style.configure("jugador.Horizontal.TProgressbar", background=SUCCESS_COLOR)
@@ -668,7 +889,7 @@ class PantallaCombate:
         else:
             style.configure("jugador.Horizontal.TProgressbar", background=DANGER_COLOR)
         
-        # Update AI health
+        # actualizar la barra de salud de la IA
         health_percentage = max(0, (self.estado['ia'].ps / self.estado['ia'].ps_max) * 100)
         self.ia_health_bar["value"] = health_percentage
         self.ia_health_text.config(
@@ -676,7 +897,7 @@ class PantallaCombate:
         )
 
     def finalizar_combate(self):
-        """Finalize the battle and show exit options"""
+        #desabilitar botones de ataque del jugador y muestra el boton de salida
         self.deshabilitar_botones()
         self.exit_frame.pack(pady=20)
 
@@ -685,26 +906,27 @@ class PantallaCombate:
             btn.config(state=tk.DISABLED, bg="#7f8c8d")
 
     def mostrar_resultado(self, titulo, mensaje, color):
-        """Show a styled result window"""
+
+        #Te dice si ganaste o perdiste mediante una ventana 
         result_window = tk.Toplevel(self.root)
         result_window.title(titulo)
-        result_window.geometry("400x250")
+        result_window.geometry("400x200")
         result_window.configure(bg=BACKGROUND_COLOR)
         result_window.resizable(False, False)
         
-        # Center the result window
+       
         result_window.transient(self.root)
         result_window.grab_set()
         
         x = self.root.winfo_x() + (self.root.winfo_width() // 2) - 200
         y = self.root.winfo_y() + (self.root.winfo_height() // 2) - 100
-        result_window.geometry(f"400x250+{x}+{y}")
+        result_window.geometry(f"400x200+{x}+{y}")
         
-        # Main frame
+      
         main_frame = tk.Frame(result_window, bg=color, relief=tk.RAISED, bd=5)
         main_frame.pack(fill="both", expand=True, padx=10, pady=10)
         
-        # Title
+        
         tk.Label(
             main_frame,
             text=titulo,
@@ -713,7 +935,7 @@ class PantallaCombate:
             fg="white"
         ).pack(pady=20)
         
-        # Message
+        
         tk.Label(
             main_frame,
             text=mensaje,
@@ -722,23 +944,8 @@ class PantallaCombate:
             fg="white"
         ).pack(pady=10)
         
-        # Button
-        tk.Button(
-            main_frame,
-            text="Continuar",
-            font=("Arial", 12, "bold"),
-            bg="white",
-            fg=color,
-            padx=20,
-            pady=5,
-            relief=tk.RAISED,
-            bd=2,
-            cursor="hand2",
-            command=result_window.destroy
-        ).pack(pady=20)
 
     def salir_juego(self):
-        """Exit the game"""
         if messagebox.askyesno("Salir", "¿Estás seguro de que quieres salir del juego?"):
             self.root.quit()
 
@@ -751,17 +958,13 @@ class PantallaSeleccion:
         self.root.configure(bg=BACKGROUND_COLOR)
         self.root.resizable(False, False)
         
-        # Center the window
         self.center_window()
         
-        # Main container
         self.main_container = tk.Frame(root, bg=BACKGROUND_COLOR)
         self.main_container.pack(fill="both", expand=True, padx=30, pady=30)
         
-        # Title
         self.create_title()
         
-        # Load Pokémon data
         self.pokemons = cargar_pokemons_desde_json()
         
         if not self.pokemons:
@@ -769,21 +972,19 @@ class PantallaSeleccion:
             root.destroy()
             return
         
-        # Create selection area
         self.create_selection_area()
         
-        # Exit button
         self.create_exit_button()
 
     def center_window(self):
-        """Center the window on the screen"""
+
         self.root.update_idletasks()
         x = (self.root.winfo_screenwidth() // 2) - (WINDOW_WIDTH // 2)
         y = (self.root.winfo_screenheight() // 2) - (WINDOW_HEIGHT // 2)
         self.root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}+{x}+{y}")
 
     def create_title(self):
-        """Create the selection title"""
+
         title_frame = tk.Frame(self.main_container, bg=BACKGROUND_COLOR)
         title_frame.pack(pady=(0, 30))
         
@@ -806,12 +1007,10 @@ class PantallaSeleccion:
         subtitle_label.pack(pady=5)
 
     def create_selection_area(self):
-        """Create the Pokémon selection area"""
-        # Selection frame
+
         selection_frame = tk.Frame(self.main_container, bg=CARD_COLOR, relief=tk.RAISED, bd=3)
         selection_frame.pack(fill="both", expand=True, padx=20, pady=20)
         
-        # Canvas with scrollbar
         canvas_frame = tk.Frame(selection_frame, bg=CARD_COLOR)
         canvas_frame.pack(fill="both", expand=True, padx=10, pady=10)
         
@@ -830,22 +1029,19 @@ class PantallaSeleccion:
         self.canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
         
-        # Configure grid for centering
         for i in range(3):
             self.scrollable_frame.grid_columnconfigure(i, weight=1)
         
-        # Create Pokémon cards
         self.pokemon_images = []
         
         for i, pkm in enumerate(self.pokemons):
             self.create_pokemon_card(pkm, i)
 
     def create_pokemon_card(self, pkm, index):
-        """Create a card for a Pokémon"""
+
         row = index // 3
         col = index % 3
         
-        # Card frame
         card_frame = tk.Frame(
             self.scrollable_frame,
             bg="#ecf0f1",
@@ -855,18 +1051,15 @@ class PantallaSeleccion:
         )
         card_frame.grid(row=row, column=col, padx=35, pady=15, sticky="nsew")
         
-        # Pokémon image
         img = self.load_pokemon_image(pkm.nombre.lower())
         self.pokemon_images.append(img)
         
         img_label = tk.Label(card_frame, image=img, bg="#ecf0f1")
         img_label.pack(pady=15)
         
-        # Info frame
         info_frame = tk.Frame(card_frame, bg="#ecf0f1")
         info_frame.pack(fill="x", padx=15, pady=(0, 15))
         
-        # Name
         name_label = tk.Label(
             info_frame,
             text=pkm.nombre.upper(),
@@ -876,7 +1069,6 @@ class PantallaSeleccion:
         )
         name_label.pack()
         
-        # Type badge
         type_frame = tk.Frame(info_frame, bg="#ecf0f1")
         type_frame.pack(pady=5)
         
@@ -893,7 +1085,6 @@ class PantallaSeleccion:
         )
         type_label.pack()
         
-        # HP
         hp_label = tk.Label(
             info_frame,
             text=f"HP: {pkm.ps}",
@@ -903,7 +1094,6 @@ class PantallaSeleccion:
         )
         hp_label.pack(pady=2)
         
-        # Select button
         select_btn = tk.Button(
             info_frame,
             text="SELECCIONAR",
@@ -918,8 +1108,8 @@ class PantallaSeleccion:
             command=lambda p=pkm: self.seleccionar_pokemon(p)
         )
         select_btn.pack(pady=10)
-        
-        # Hover effects
+
+                
         def on_enter(e):
             card_frame.config(bg="#d5dbdb")
             img_label.config(bg="#d5dbdb")
@@ -947,7 +1137,7 @@ class PantallaSeleccion:
             widget.bind("<Leave>", on_leave)
 
     def create_exit_button(self):
-        """Create exit button"""
+
         exit_frame = tk.Frame(self.main_container, bg=BACKGROUND_COLOR)
         exit_frame.pack(fill="x", expand=True, pady=20)
         
@@ -967,7 +1157,7 @@ class PantallaSeleccion:
         exit_button.pack()
 
     def load_pokemon_image(self, pokemon_name):
-        """Load and resize a Pokémon image"""
+
         try:
             img_path = f"assets/pokemon/{pokemon_name}.png"
             if not os.path.exists(img_path):
@@ -981,11 +1171,11 @@ class PantallaSeleccion:
             return self.create_placeholder_pokemon_image(pokemon_name)
 
     def create_placeholder_pokemon_image(self, name):
-        """Create a placeholder Pokémon image"""
+
         img = Image.new('RGBA', POKEMON_IMG_SIZE, color=(52, 73, 94, 255))
         draw = ImageDraw.Draw(img)
         
-        # Draw circle
+        
         circle_x, circle_y = POKEMON_IMG_SIZE[0] // 2, POKEMON_IMG_SIZE[1] // 2
         circle_radius = min(POKEMON_IMG_SIZE) // 2 - 10
         draw.ellipse(
@@ -996,7 +1186,7 @@ class PantallaSeleccion:
             width=3
         )
         
-        # Add text
+     
         try:
             font = ImageFont.truetype("arial.ttf", 32)
         except IOError:
@@ -1016,7 +1206,8 @@ class PantallaSeleccion:
         return ImageTk.PhotoImage(img)
 
     def get_type_color(self, tipo):
-        """Return a color based on Pokémon type"""
+        
+        #colores de los pokemos de acuerdo a su tipo
         colors = {
             "normal": "#A8A878",
             "fuego": "#F08030",
@@ -1045,7 +1236,6 @@ class PantallaSeleccion:
     def abrir_combate(self, pkm_jugador):
         root = tk.Tk()
         
-        # Make copies to avoid modifying originals
         pkm_jugador_copia = Pokemon(
             pkm_jugador.nombre,
             pkm_jugador.tipo,
@@ -1069,30 +1259,15 @@ class PantallaSeleccion:
         root.mainloop()
 
     def salir_aplicacion(self):
-        """Exit the application"""
         if messagebox.askyesno("Salir", "¿Estás seguro de que quieres salir?"):
             self.root.quit()
 
 
-def create_directories():
-    """Create necessary directories for assets if they don't exist"""
-    directories = [
-        "assets",
-        "assets/pokemon",
-        "assets/types",
-    ]
-    
-    for directory in directories:
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-
 
 if __name__ == "__main__":
     try:
-        # Create necessary directories
-        create_directories()
         
-        # Create main window and start with welcome screen
+       
         root = tk.Tk()
         app = PantallaInicio(root)
         root.mainloop()

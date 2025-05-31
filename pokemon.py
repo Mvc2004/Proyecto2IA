@@ -14,3 +14,5 @@ class Pokemon:
 
     def esta_vivo(self):
         return self.ps > 0
+    
+    

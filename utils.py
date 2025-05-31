@@ -7,7 +7,7 @@ EFECTIVIDAD = {
     'fuego':    {'bicho': 2.0, 'planta': 2.0, 'agua': 0.5, 'fuego': 0.5},
     'planta':   {'agua': 2.0, 'fuego': 0.5, 'bicho': 2.0, 'planta': 0.5, 'volador': 0.5, 'tierra': 2.0},
     'electrico':{'agua': 2.0, 'electrico': 0.5, 'tierra': 0.0, 'planta': 0.5, 'volador': 2.0},
-    'normal':   {},
+    'normal':   {'roca':0.5, 'acero':0.5, 'fantasma':0.0},
     'bicho':    {'planta': 2.0, 'fuego': 0.5, 'volador': 0.5, 'lucha': 0.5, 'veneno': 0.5},
     'lucha':    {'normal': 2.0, 'bicho': 0.5, 'volador': 0.5, 'veneno': 0.5},
     'volador':  {'bicho': 2.0, 'planta': 2.0, 'electrico': 0.5, 'lucha': 2.0},
