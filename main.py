@@ -35,7 +35,7 @@ class PantallaInicio:
         
         # Main container
         self.main_container = tk.Frame(root, bg=BACKGROUND_COLOR)
-        self.main_container.pack(fill="both", expand=True, padx=40, pady=40)
+        self.main_container.pack(fill="both", expand=True, padx=10, pady=10)
         
         # Create welcome screen
         self.create_welcome_screen()
@@ -76,7 +76,6 @@ class PantallaInicio:
         content_frame = tk.Frame(self.main_container, bg=CARD_COLOR, relief=tk.RAISED, bd=3)
         content_frame.pack(fill="both", expand=True, padx=20, pady=20)
         
-        
         # Rules section
         rules_frame = tk.Frame(content_frame, bg=CARD_COLOR)
         rules_frame.pack(fill="both", expand=True, padx=30, pady=20)
@@ -95,6 +94,7 @@ class PantallaInicio:
             "🎯 Objetivo: Derrota al Pokémon de la IA reduciendo sus PS a 0",
             "⚔️ Combate: Selecciona uno de los 4 movimientos disponibles",
             "💥 Daño: Cada movimiento tiene diferente poder de ataque",
+            "🎨 Tipos: Los tipos afectan la efectividad de los movimientos",
             "🤖 IA Inteligente: La IA usa algoritmo minimax para elegir movimientos",
             "❤️ Vida: Las barras de vida cambian de color según el daño recibido",
             "🏆 Victoria: ¡Gana siendo el último Pokémon en pie!"
@@ -135,7 +135,7 @@ class PantallaInicio:
         # Exit button
         exit_button = tk.Button(
             buttons_frame,
-            text="🚪 SALIR",
+            text="SALIR",
             font=("Arial", 14, "bold"),
             bg=DANGER_COLOR,
             fg="white",
@@ -166,7 +166,6 @@ class PantallaInicio:
         exit_button.bind("<Enter>", on_enter_exit)
         exit_button.bind("<Leave>", on_leave_exit)
 
-    
     def ir_a_seleccion(self):
         """Go to Pokemon selection screen"""
         self.root.destroy()
@@ -196,6 +195,9 @@ class PantallaCombate:
             'ia': pkm_ia
         }
         
+        # Track AI's chosen move
+        self.ai_chosen_move = None
+        
         # Main container
         self.canvas = tk.Canvas(self.root, bg=BACKGROUND_COLOR, highlightthickness=0)
         self.scrollbar = ttk.Scrollbar(self.root, orient="vertical", command=self.canvas.yview)
@@ -221,6 +223,9 @@ class PantallaCombate:
         # Battle area
         self.create_battle_area()
         
+        # AI move display
+        self.create_ai_move_display()
+        
         # Battle log
         self.create_battle_log()
         
@@ -242,6 +247,161 @@ class PantallaCombate:
         x = (self.root.winfo_screenwidth() // 2) - (WINDOW_WIDTH // 2)
         y = (self.root.winfo_screenheight() // 2) - (WINDOW_HEIGHT // 2)
         self.root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}+{x}+{y}")
+
+    def get_type_effectiveness(self, attack_type, defend_type):
+        """Calculate type effectiveness multiplier and return description"""
+        # Type effectiveness chart
+        effectiveness = {
+            "fuego": {
+                "planta": "Súper Eficaz",
+                "hielo": "Súper Eficaz",
+                "bicho": "Súper Eficaz",
+                "acero": "Súper Eficaz",
+                "agua": "No muy eficaz",
+                "fuego": "No muy eficaz",
+                "roca": "No muy eficaz",
+                "dragón": "No muy eficaz"
+            },
+            "agua": {
+                "fuego": "Súper Eficaz",
+                "tierra": "Súper Eficaz",
+                "roca": "Súper Eficaz",
+                "agua": "No muy eficaz",
+                "planta": "No muy eficaz",
+                "dragón": "No muy eficaz"
+            },
+            "planta": {
+                "agua": "Súper Eficaz",
+                "tierra": "Súper Eficaz",
+                "roca": "Súper Eficaz",
+                "fuego": "No muy eficaz",
+                "planta": "No muy eficaz",
+                "veneno": "No muy eficaz",
+                "volador": "No muy eficaz",
+                "bicho": "No muy eficaz",
+                "dragón": "No muy eficaz",
+                "acero": "No muy eficaz"
+            },
+            "eléctrico": {
+                "agua": "Súper Eficaz",
+                "volador": "Súper Eficaz",
+                "planta": "No muy eficaz",
+                "eléctrico": "No muy eficaz",
+                "dragón": "No muy eficaz",
+                "tierra": "No afecta"
+            },
+            "hielo": {
+                "planta": "Súper Eficaz",
+                "tierra": "Súper Eficaz",
+                "volador": "Súper Eficaz",
+                "dragón": "Súper Eficaz",
+                "agua": "No muy eficaz",
+                "hielo": "No muy eficaz",
+                "acero": "No muy eficaz"
+            },
+            "lucha": {
+                "normal": "Súper Eficaz",
+                "hielo": "Súper Eficaz",
+                "roca": "Súper Eficaz",
+                "acero": "Súper Eficaz",
+                "veneno": "No muy eficaz",
+                "volador": "No muy eficaz",
+                "psíquico": "No muy eficaz",
+                "bicho": "No muy eficaz",
+                "hada": "No muy eficaz",
+                "fantasma": "No afecta"
+            },
+            "veneno": {
+                "planta": "Súper Eficaz",
+                "hada": "Súper Eficaz",
+                "veneno": "No muy eficaz",
+                "tierra": "No muy eficaz",
+                "roca": "No muy eficaz",
+                "fantasma": "No muy eficaz",
+                "acero": "No afecta"
+            },
+            "tierra": {
+                "fuego": "Súper Eficaz",
+                "eléctrico": "Súper Eficaz",
+                "veneno": "Súper Eficaz",
+                "roca": "Súper Eficaz",
+                "acero": "Súper Eficaz",
+                "planta": "No muy eficaz",
+                "bicho": "No muy eficaz",
+                "volador": "No afecta"
+            },
+            "volador": {
+                "eléctrico": "Súper Eficaz",
+                "hielo": "Súper Eficaz",
+                "roca": "Súper Eficaz",
+                "planta": "Súper Eficaz",
+                "lucha": "Súper Eficaz",
+                "bicho": "Súper Eficaz",
+                "eléctrico": "No muy eficaz",
+                "roca": "No muy eficaz",
+                "acero": "No muy eficaz"
+            },
+            "psíquico": {
+                "lucha": "Súper Eficaz",
+                "veneno": "Súper Eficaz",
+                "psíquico": "No muy eficaz",
+                "acero": "No muy eficaz"
+            },
+            "bicho": {
+                "planta": "Súper Eficaz",
+                "psíquico": "Súper Eficaz",
+                "fuego": "No muy eficaz",
+                "lucha": "No muy eficaz",
+                "veneno": "No muy eficaz",
+                "volador": "No muy eficaz",
+                "fantasma": "No muy eficaz",
+                "acero": "No muy eficaz",
+                "hada": "No muy eficaz"
+            },
+            "roca": {
+                "fuego": "Súper Eficaz",
+                "hielo": "Súper Eficaz",
+                "volador": "Súper Eficaz",
+                "bicho": "Súper Eficaz",
+                "lucha": "No muy eficaz",
+                "tierra": "No muy eficaz",
+                "acero": "No muy eficaz"
+            },
+            "fantasma": {
+                "psíquico": "Súper Eficaz",
+                "fantasma": "Súper Eficaz",
+                "normal": "No afecta"
+            },
+            "dragón": {
+                "dragón": "Súper Eficaz",
+                "acero": "No muy eficaz",
+                "hada": "No afecta"
+            },
+            "acero": {
+                "hielo": "Súper Eficaz",
+                "roca": "Súper Eficaz",
+                "hada": "Súper Eficaz",
+                "fuego": "No muy eficaz",
+                "agua": "No muy eficaz",
+                "eléctrico": "No muy eficaz",
+                "acero": "No muy eficaz"
+            },
+            "hada": {
+                "lucha": "Súper Eficaz",
+                "dragón": "Súper Eficaz",
+                "fuego": "No muy eficaz",
+                "veneno": "No muy eficaz",
+                "acero": "No muy eficaz"
+            }
+        }
+        
+        attack_type = attack_type.lower()
+        defend_type = defend_type.lower()
+        
+        if attack_type in effectiveness and defend_type in effectiveness[attack_type]:
+            return effectiveness[attack_type][defend_type]
+        else:
+            return "Eficaz"
 
     def create_title(self):
         """Create the battle title"""
@@ -282,7 +442,6 @@ class PantallaCombate:
 
         # Pokémon del jugador (derecha)
         self.create_pokemon_display(battle_frame, self.estado['jugador'], 'jugador', 0, 2)
-
 
     def create_pokemon_display(self, parent, pokemon, side, row, column):
         """Muestra Pokémon con imagen, tipo y vida"""
@@ -341,6 +500,90 @@ class PantallaCombate:
         health_text.pack(anchor="e", padx=5)
         setattr(self, f"{side}_health_text", health_text)
 
+    def create_ai_move_display(self):
+        """Create frame to display AI's chosen move"""
+        ai_move_frame = tk.Frame(self.main_container, bg="#e74c3c", relief=tk.RAISED, bd=3)
+        ai_move_frame.pack(fill="x", pady=10, padx=80)
+        
+        ai_move_title = tk.Label(
+            ai_move_frame,
+            text="🤖 MOVIMIENTO DE LA IA",
+            font=("Arial", 12, "bold"),
+            bg="#e74c3c",
+            fg="white"
+        )
+        ai_move_title.pack(pady=5)
+        
+        # AI move info container
+        self.ai_move_info_frame = tk.Frame(ai_move_frame, bg="#e74c3c")
+        self.ai_move_info_frame.pack(pady=10)
+        
+        # Initially show "Thinking..."
+        self.ai_move_label = tk.Label(
+            self.ai_move_info_frame,
+            text="🤔 La IA está pensando...",
+            font=("Arial", 14, "bold"),
+            bg="#e74c3c",
+            fg="white"
+        )
+        self.ai_move_label.pack()
+
+    def update_ai_move_display(self, move):
+        """Update the AI move display with the chosen move"""
+        self.ai_chosen_move = move
+        
+        # Clear previous content
+        for widget in self.ai_move_info_frame.winfo_children():
+            widget.destroy()
+        
+        # Create new display
+        move_container = tk.Frame(self.ai_move_info_frame, bg="#e74c3c")
+        move_container.pack()
+        
+        # Move type icon
+        move_img = self.load_move_image(move.tipo.lower())
+        move_img_label = tk.Label(move_container, image=move_img, bg="#e74c3c")
+        move_img_label.image = move_img  # Keep reference
+        move_img_label.pack(side=tk.LEFT, padx=10)
+        
+        # Move info
+        move_info_frame = tk.Frame(move_container, bg="#e74c3c")
+        move_info_frame.pack(side=tk.LEFT, padx=10)
+        
+        move_name_label = tk.Label(
+            move_info_frame,
+            text=f"⚡ {move.nombre}",
+            font=("Arial", 14, "bold"),
+            bg="#e74c3c",
+            fg="white"
+        )
+        move_name_label.pack()
+        
+        move_details_label = tk.Label(
+            move_info_frame,
+            text=f"Tipo: {move.tipo.upper()} | Poder: {move.poder}",
+            font=("Arial", 10),
+            bg="#e74c3c",
+            fg="white"
+        )
+        move_details_label.pack()
+        
+        # Update player move buttons with effectiveness
+        self.update_move_buttons_effectiveness()
+
+    def update_move_buttons_effectiveness(self):
+        """Update player move buttons to show effectiveness against AI's chosen move"""
+        if not self.ai_chosen_move:
+            return
+            
+        for idx, (btn, movimiento) in enumerate(zip(self.botones_ataque, self.estado['jugador'].movimientos)):
+            # Calculate effectiveness of player move against AI move type
+            effectiveness = self.get_type_effectiveness(movimiento.tipo, self.ai_chosen_move.tipo)
+            
+            # Update button text
+            btn.config(
+                text=f"{movimiento.nombre}\n💥 {movimiento.poder} poder\n{effectiveness} vs {self.ai_chosen_move.tipo}"
+            )
 
     def create_battle_log(self):
         """Create the battle log area"""
@@ -421,13 +664,13 @@ class PantallaCombate:
             move_img_label.image = move_img  # Keep reference
             move_img_label.pack(side=tk.LEFT, padx=5)
             
-            # Move button
+            # Move button - initially without effectiveness
             btn = tk.Button(
                 move_frame,
-                text=f"{movimiento.nombre}\n💥 {movimiento.poder} poder",
+                text=f"{movimiento.nombre}\n💥 {movimiento.poder} poder\nEsperando IA...",
                 width=22,
-                height=3,
-                font=("Arial", 10, "bold"),
+                height=4,
+                font=("Arial", 9, "bold"),
                 bg=self.get_type_color(movimiento.tipo),
                 fg="white",
                 relief=tk.RAISED,
@@ -441,8 +684,6 @@ class PantallaCombate:
             # Hover effects
             btn.bind("<Enter>", lambda e, b=btn: b.config(relief=tk.RIDGE))
             btn.bind("<Leave>", lambda e, b=btn: b.config(relief=tk.RAISED))
-    
-    
 
     def create_exit_button(self):
         """Create exit button"""
@@ -451,7 +692,7 @@ class PantallaCombate:
         
         self.exit_button = tk.Button(
             self.exit_frame,
-            text="🚪 SALIR DEL JUEGO",
+            text="SALIR DEL JUEGO",
             font=("Arial", 12, "bold"),
             bg=DANGER_COLOR,
             fg="white",
@@ -604,6 +845,13 @@ class PantallaCombate:
         ps_despues = self.estado['ia'].ps
         
         damage = ps_antes - ps_despues
+        
+        # Show effectiveness if AI has chosen a move
+        if self.ai_chosen_move:
+            effectiveness = self.get_type_effectiveness(movimiento.tipo, self.ai_chosen_move.tipo)
+            if effectiveness != "Eficaz":
+                self.mensaje.insert(tk.END, f"   ⚡ {effectiveness} contra {self.ai_chosen_move.tipo}!\n")
+        
         self.mensaje.insert(tk.END, f"   💥 Causó {damage:.0f} puntos de daño!\n")
         
         self.actualizar_estado()
@@ -618,11 +866,16 @@ class PantallaCombate:
         self.root.after(1500, self.turno_ia)
 
     def turno_ia(self):
+        # First, determine AI's move choice
         estado_copia = copiar_estado(self.estado)
         _, mejor_ataque = minimax_con_poda(
             estado_copia, profundidad=3, alpha=float('-inf'), beta=float('inf'), es_max_turno=True
         )
 
+        # Update AI move display
+        self.update_ai_move_display(mejor_ataque)
+
+        # Find the actual move object
         ataque_real = None
         for m in self.estado['ia'].movimientos:
             if m.nombre == mejor_ataque.nombre:
@@ -688,7 +941,7 @@ class PantallaCombate:
         """Show a styled result window"""
         result_window = tk.Toplevel(self.root)
         result_window.title(titulo)
-        result_window.geometry("400x250")
+        result_window.geometry("400x200")
         result_window.configure(bg=BACKGROUND_COLOR)
         result_window.resizable(False, False)
         
@@ -698,7 +951,7 @@ class PantallaCombate:
         
         x = self.root.winfo_x() + (self.root.winfo_width() // 2) - 200
         y = self.root.winfo_y() + (self.root.winfo_height() // 2) - 100
-        result_window.geometry(f"400x250+{x}+{y}")
+        result_window.geometry(f"400x200+{x}+{y}")
         
         # Main frame
         main_frame = tk.Frame(result_window, bg=color, relief=tk.RAISED, bd=5)
@@ -722,23 +975,8 @@ class PantallaCombate:
             fg="white"
         ).pack(pady=10)
         
-        # Button
-        tk.Button(
-            main_frame,
-            text="Continuar",
-            font=("Arial", 12, "bold"),
-            bg="white",
-            fg=color,
-            padx=20,
-            pady=5,
-            relief=tk.RAISED,
-            bd=2,
-            cursor="hand2",
-            command=result_window.destroy
-        ).pack(pady=20)
 
     def salir_juego(self):
-        """Exit the game"""
         if messagebox.askyesno("Salir", "¿Estás seguro de que quieres salir del juego?"):
             self.root.quit()
 

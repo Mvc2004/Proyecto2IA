@@ -1,5 +1,4 @@
 from utils import calcular_daño, copiar_estado
-import random
  
 TAB = "   "
 
@@ -66,7 +65,7 @@ def aplicar_daño_simulado(atacante, defensor, movimiento):
     defensor.ps -= daño
 
 
-def iniciar_combate(pkm_jugador, pkm_ia):
+"""def iniciar_combate(pkm_jugador, pkm_ia):
     print("ENTRAAAAAA")
     print("⚔️ ¡Comienza el combate!")
     print(f"{pkm_jugador.nombre} (Jugador) vs {pkm_ia.nombre} (IA)\n")
@@ -102,4 +101,4 @@ def iniciar_combate(pkm_jugador, pkm_ia):
     if pkm_jugador.esta_vivo():
         print("\n🎉 ¡Has ganado el combate!")
     else:
-        print("\n💀 La IA te ha derrotado.")
+        print("\n💀 La IA te ha derrotado.")"""
