@@ -17,6 +17,8 @@ EFECTIVIDAD = {
 
 def calcular_daño(tipo_ataque, tipo_defensa, poder):
     efectividad = EFECTIVIDAD.get(tipo_ataque.lower(), {}).get(tipo_defensa.lower(), 1.0)
+    print(efectividad)
+    print(poder," ", poder* efectividad)
     return poder * efectividad
 
  

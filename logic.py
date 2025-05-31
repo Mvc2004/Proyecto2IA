@@ -6,9 +6,11 @@ TAB = "   "
 
 def aplicar_daño(atacante, defensor, movimiento):
     daño = calcular_daño(movimiento.tipo, defensor.tipo, movimiento.poder)
+    print(movimiento.tipo," ", defensor.tipo," ", movimiento.poder)
     defensor.ps -= daño
     print(f"\n{TAB}{atacante.nombre} usó {movimiento.nombre}")
     print(f"Daño infligido: {daño:.1f}")
+    print(defensor.ps)
     if not defensor.esta_vivo():
         print(f"{defensor.nombre} ha sido debilitado!")
 
