@@ -4,8 +4,8 @@ import random
 import os
 from PIL import Image, ImageTk, ImageDraw, ImageFont
 from utils import cargar_pokemons_desde_json
-from pokemon import Pokemon, Movimiento
-from logic import iniciar_combate, aplicar_daño, copiar_estado, minimax_con_poda
+from pokemon import Pokemon
+from logic import aplicar_daño, copiar_estado, minimax_con_poda
 
 # Constants
 WINDOW_WIDTH = 900
@@ -95,7 +95,6 @@ class PantallaInicio:
             "🎯 Objetivo: Derrota al Pokémon de la IA reduciendo sus PS a 0",
             "⚔️ Combate: Selecciona uno de los 4 movimientos disponibles",
             "💥 Daño: Cada movimiento tiene diferente poder de ataque",
-            "🎨 Tipos: Los tipos de Pokémon afectan los colores de los movimientos",
             "🤖 IA Inteligente: La IA usa algoritmo minimax para elegir movimientos",
             "❤️ Vida: Las barras de vida cambian de color según el daño recibido",
             "🏆 Victoria: ¡Gana siendo el último Pokémon en pie!"
@@ -167,43 +166,7 @@ class PantallaInicio:
         exit_button.bind("<Enter>", on_enter_exit)
         exit_button.bind("<Leave>", on_leave_exit)
 
-    def load_welcome_image(self):
-        """Load and resize the welcome image"""
-        try:
-            img_path = "assets/welcome.png"
-            if not os.path.exists(img_path):
-                return self.create_welcome_placeholder()
-            
-            img = Image.open(img_path)
-            img = img.resize((200, 150), Image.LANCZOS)
-            return ImageTk.PhotoImage(img)
-        except Exception as e:
-            print(f"Error loading welcome image: {e}")
-            return self.create_welcome_placeholder()
-
-    def create_welcome_placeholder(self):
-        """Create a placeholder welcome image"""
-        img = Image.new('RGBA', (200, 150), color=(52, 152, 219, 255))
-        draw = ImageDraw.Draw(img)
-        
-        # Draw a pokeball-like design
-        center_x, center_y = 100, 75
-        
-        # Main circle
-        draw.ellipse((20, 25, 180, 125), fill=(255, 255, 255, 255), outline=(0, 0, 0, 255), width=3)
-        
-        # Top half (red)
-        draw.pieslice((20, 25, 180, 125), 0, 180, fill=(231, 76, 60, 255))
-        
-        # Middle line
-        draw.rectangle((20, 70, 180, 80), fill=(0, 0, 0, 255))
-        
-        # Center circle
-        draw.ellipse((85, 60, 115, 90), fill=(255, 255, 255, 255), outline=(0, 0, 0, 255), width=2)
-        draw.ellipse((90, 65, 110, 85), fill=(0, 0, 0, 255))
-        
-        return ImageTk.PhotoImage(img)
-
+    
     def ir_a_seleccion(self):
         """Go to Pokemon selection screen"""
         self.root.destroy()
@@ -378,6 +341,7 @@ class PantallaCombate:
         health_text.pack(anchor="e", padx=5)
         setattr(self, f"{side}_health_text", health_text)
 
+
     def create_battle_log(self):
         """Create the battle log area"""
         log_frame = tk.Frame(self.main_container, bg=CARD_COLOR, relief=tk.RAISED, bd=3)
@@ -477,6 +441,8 @@ class PantallaCombate:
             # Hover effects
             btn.bind("<Enter>", lambda e, b=btn: b.config(relief=tk.RIDGE))
             btn.bind("<Leave>", lambda e, b=btn: b.config(relief=tk.RAISED))
+    
+    
 
     def create_exit_button(self):
         """Create exit button"""

@@ -1,4 +1,3 @@
-from pokemon import Pokemon, Movimiento
 from utils import calcular_daño, copiar_estado
 import random
  
@@ -68,6 +67,7 @@ def aplicar_daño_simulado(atacante, defensor, movimiento):
 
 
 def iniciar_combate(pkm_jugador, pkm_ia):
+    print("ENTRAAAAAA")
     print("⚔️ ¡Comienza el combate!")
     print(f"{pkm_jugador.nombre} (Jugador) vs {pkm_ia.nombre} (IA)\n")
 
