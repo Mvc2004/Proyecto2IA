@@ -1,6 +1,5 @@
 from utils import calcular_daño, copiar_estado
  
-TAB = "   "
 
 def aplicar_daño(atacante, defensor, movimiento):
     daño = calcular_daño(movimiento.tipo, defensor.tipo, movimiento.poder)
