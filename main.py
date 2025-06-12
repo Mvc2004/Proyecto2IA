@@ -41,15 +41,12 @@ class PantallaInicio:
         self.create_welcome_screen()
 
     def center_window(self):
-        """Center the window on the screen"""
         self.root.update_idletasks()
         x = (self.root.winfo_screenwidth() // 2) - (WINDOW_WIDTH // 2)
         y = (self.root.winfo_screenheight() // 2) - (WINDOW_HEIGHT // 2)
         self.root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}+{x}+{y}")
 
-    def create_welcome_screen(self):
-        """Create the welcome screen with title, image, rules, and next button"""
-        
+    def create_welcome_screen(self):        
         # Title section
         title_frame = tk.Frame(self.main_container, bg=BACKGROUND_COLOR)
         title_frame.pack(pady=(0, 20))
@@ -93,8 +90,8 @@ class PantallaInicio:
         rules_text = [
             "🎯 Objetivo: Derrota al Pokémon de la IA reduciendo sus PS a 0",
             "⚔️ Combate: Selecciona uno de los 4 movimientos disponibles",
-            "💥 Daño: Cada movimiento tiene diferente poder de ataque",
-            "🎨 Tipos: Los tipos afectan la efectividad de los movimientos",
+            "💥 Daño: Cada movimiento tiene diferente poder de ataque (super eficaz: x2, no muy eficaz: x0.5, no afecta: x0)",
+            "🎨 Tipos: Los tipos de pokemones afectan la efectividad de los movimientos",
             "🤖 IA Inteligente: La IA usa algoritmo minimax para elegir movimientos",
             "❤️ Vida: Las barras de vida cambian de color según el daño recibido",
             "🏆 Victoria: ¡Gana siendo el último Pokémon en pie!"
@@ -167,19 +164,18 @@ class PantallaInicio:
         exit_button.bind("<Leave>", on_leave_exit)
 
     def ir_a_seleccion(self):
-        """Go to Pokemon selection screen"""
         self.root.destroy()
         root = tk.Tk()
         app = PantallaSeleccion(root)
         root.mainloop()
 
     def salir_aplicacion(self):
-        """Exit the application"""
         if messagebox.askyesno("Salir", "¿Estás seguro de que quieres salir?"):
             self.root.quit()
 
 
 class PantallaCombate:
+
     def __init__(self, root, pkm_jugador, pkm_ia):
         self.root = root
         self.root.title("⚔️ Combate Pokémon con IA")
@@ -229,14 +225,13 @@ class PantallaCombate:
         self.actualizar_estado()
 
     def center_window(self):
-        """Center the window on the screen"""
         self.root.update_idletasks()
         x = (self.root.winfo_screenwidth() // 2) - (WINDOW_WIDTH // 2)
         y = (self.root.winfo_screenheight() // 2) - (WINDOW_HEIGHT // 2)
         self.root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}+{x}+{y}")
 
     def get_type_effectiveness(self, attack_type, defend_type):
-        
+        print(f"Calculando efectividad: {attack_type} vs {defend_type}")
         effectiveness = {
             "fuego": {
                 "planta": "Súper Eficaz",
@@ -324,25 +319,24 @@ class PantallaCombate:
                 "volador": "No afecta"
             },
             "volador": {
-                "eléctrico": "Súper Eficaz",
-                "hielo": "Súper Eficaz",
-                "roca": "Súper Eficaz",
+                "eléctrico": "No muy eficaz",
+                "roca": "No muy eficaz",
                 "planta": "Súper Eficaz",
                 "lucha": "Súper Eficaz",
                 "bicho": "Súper Eficaz",
-                "eléctrico": "No muy eficaz",
-                "roca": "No muy eficaz",
                 "acero": "No muy eficaz"
             },
             "psíquico": {
                 "lucha": "Súper Eficaz",
                 "veneno": "Súper Eficaz",
                 "psíquico": "No muy eficaz",
-                "acero": "No muy eficaz"
+                "acero": "No muy eficaz",
+                "siniestro": "No afecta"
             },
             "bicho": {
                 "planta": "Súper Eficaz",
                 "psíquico": "Súper Eficaz",
+                "siniestro": "Súper Eficaz",
                 "fuego": "No muy eficaz",
                 "lucha": "No muy eficaz",
                 "veneno": "No muy eficaz",
@@ -363,7 +357,8 @@ class PantallaCombate:
             "fantasma": {
                 "psíquico": "Súper Eficaz",
                 "fantasma": "Súper Eficaz",
-                "normal": "No afecta"
+                "normal": "No afecta",
+                "siniestro": "No muy eficaz",
             },
             "dragón": {
                 "dragón": "Súper Eficaz",
@@ -384,7 +379,15 @@ class PantallaCombate:
                 "dragón": "Súper Eficaz",
                 "fuego": "No muy eficaz",
                 "veneno": "No muy eficaz",
-                "acero": "No muy eficaz"
+                "acero": "No muy eficaz",
+                "siniestro": "Súper Eficaz",
+            },
+            "siniestro": {
+                "fantasma": "Súper Eficaz",
+                "siniestro": "No muy eficaz",
+                "lucha": "No muy eficaz",
+                "hada": "No muy eficaz",
+                "psíquico": "Súper Eficaz"
             }
         }
         
@@ -394,7 +397,7 @@ class PantallaCombate:
         if attack_type in effectiveness and defend_type in effectiveness[attack_type]:
             return effectiveness[attack_type][defend_type]
         else:
-            return "Eficaz888"
+            return "No existe Efectividad"
 
     def create_title(self):
 
@@ -559,17 +562,21 @@ class PantallaCombate:
 
     def update_move_buttons_effectiveness(self):
 
-        if not self.ai_chosen_move:
-            return
-            
-        for idx, (btn, movimiento) in enumerate(zip(self.botones_ataque, self.estado['jugador'].movimientos)):
+        print(f"Movimientos: {len(self.estado['jugador'].movimientos)}")
+        print(f"Botones: {len(self.botones_ataque)}")
+        for btn, movimiento in zip(self.botones_ataque, self.estado['jugador'].movimientos):
             # Calcular la efectividad del movimiento del jugador contra el tipo de movimiento de la IA
             print(self.estado['ia'].tipo)
             effectiveness = self.get_type_effectiveness(movimiento.tipo, self.estado['ia'].tipo)
-            print(effectiveness)
-            btn.config(
-                text=f"{movimiento.nombre}\n💥 {movimiento.poder} poder\n{effectiveness} vs {self.estado['ia'].tipo}"
+            print("None", effectiveness)
+            if effectiveness == "No existe Efectividad":
+                btn.config(
+                text=f"{movimiento.nombre}\n💥 {movimiento.poder} poder\n{effectiveness} contra \n{self.estado['ia'].tipo}"
             )
+            else:
+                btn.config(
+                    text=f"{movimiento.nombre}\n💥 {movimiento.poder} poder\n{effectiveness} vs {self.estado['ia'].tipo}"
+                )
 
     def create_battle_log(self):
 
@@ -646,7 +653,7 @@ class PantallaCombate:
             
             btn = tk.Button(
                 move_frame,
-                text=f"{movimiento.nombre}\n💥 {movimiento.poder} poder\nEsperando IA...",
+                text=f"{movimiento.nombre}\n💥 {movimiento.poder} poderrrrr",
                 width=22,
                 height=4,
                 font=("Arial", 9, "bold"),
@@ -663,6 +670,7 @@ class PantallaCombate:
             btn.bind("<Enter>", lambda e, b=btn: b.config(relief=tk.RIDGE))
             btn.bind("<Leave>", lambda e, b=btn: b.config(relief=tk.RAISED))
 
+        self.update_move_buttons_effectiveness()
     def create_exit_button(self):
 
         self.exit_frame = tk.Frame(self.main_container, bg=BACKGROUND_COLOR)
@@ -781,7 +789,6 @@ class PantallaCombate:
         return ImageTk.PhotoImage(img)
 
     def get_type_color(self, tipo):
-        """Return a color based on Pokémon type"""
         colors = {
             "normal": "#A8A878",
             "fuego": "#F08030",
@@ -1245,7 +1252,7 @@ class PantallaSeleccion:
         pkm_jugador_copia.ps_max = pkm_jugador_copia.ps
         
         todos_los_pokemons = cargar_pokemons_desde_json()
-        pkm_ia = random.choice(todos_los_pokemons)
+        pkm_ia = random.choice(todos_los_pokemons) #ESCOGE EL POKEMON DE LA IA CON RAMDON
         
         pkm_ia_copia = Pokemon(
             pkm_ia.nombre,
@@ -1266,8 +1273,6 @@ class PantallaSeleccion:
 
 if __name__ == "__main__":
     try:
-        
-       
         root = tk.Tk()
         app = PantallaInicio(root)
         root.mainloop()
